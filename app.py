@@ -163,7 +163,23 @@ with st.form(key='registration_form'):
                     st.error(f"An error occurred during registration: {str(e)}")
                 finally:
                     conn.close()
-
+                    
+st.markdown('<h3>Already Registered? Log In</h3>', unsafe_allow_html=True)
+with st.form(key='login_form'):
+    login_username = st.text_input("Username", key="login_username")
+    login_password = st.text_input("Password", type="password", key="login_password")
+    login_button = st.form_submit_button("Log In")
+    if login_button:
+        conn = sqlite3.connect('users.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM users WHERE username = ? AND password = ?", 
+                 (login_username, hash_password(login_password)))
+        user = c.fetchone()
+        conn.close()
+        if user:
+            st.success(f"Welcome back, {user[4]} {user[5]}!")
+        else:
+            st.error("Invalid username or password.")
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
