@@ -1,0 +1,3 @@
+st.markdown('<h3>Admin: Download Database</h3>', unsafe_allow_html=True)
+with open('users.db', 'rb') as f:
+    st.download_button("Download Users Database", f, file_name="users.db")

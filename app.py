@@ -89,7 +89,7 @@ st.markdown("""
         margin: 0 auto;
     }
     .stButton>button {
-        background-color: #1e3a8a;
+        background-color: #16a34a;
         color: white;
         width: 100%;
         padding: 10px;
@@ -97,7 +97,7 @@ st.markdown("""
         border-radius: 5px;
     }
     .stButton>button:hover {
-        background-color: #3b82f6;
+        background-color: #22c55e;
     }
     .footer {
         text-align: center;
