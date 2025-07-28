@@ -5,7 +5,7 @@ import hashlib
 from datetime import datetime
 
 # Initialize SQLite database
-def init_db() -> None:
+def init_db():
     conn = sqlite3.connect('users.db')
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users (
@@ -21,41 +21,13 @@ def init_db() -> None:
     conn.close()
 
 # Hash password for security
-def hash_password(password: str) -> str:
+def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 # Validate email format
-def is_valid_email(email: str) -> bool:
+def is_valid_email(email):
     pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
     return re.match(pattern, email) is not None
-
-# Validate password strength
-def is_valid_password(password: str) -> tuple[bool, str]:
-    """
-    Validate password strength.
-    Returns (is_valid, error_message)
-    """
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters long."
-    if not re.search(r'[A-Z]', password):
-        return False, "Password must contain at least one uppercase letter."
-    if not re.search(r'[a-z]', password):
-        return False, "Password must contain at least one lowercase letter."
-    if not re.search(r'\d', password):
-        return False, "Password must contain at least one number."
-    return True, ""
-
-# Validate username format
-def is_valid_username(username: str) -> tuple[bool, str]:
-    """
-    Validate username format.
-    Returns (is_valid, error_message)
-    """
-    if len(username) < 3 or len(username) > 30:
-        return False, "Username must be 3-30 characters long."
-    if not re.match(r'^[a-zA-Z0-9_]+$', username):
-        return False, "Username can only contain letters, numbers, and underscores."
-    return True, ""
 
 # Initialize database
 init_db()
@@ -122,11 +94,11 @@ st.markdown('<p class="subtitle">Join our community to unlock exclusive insights
 st.markdown('<div class="form-container">', unsafe_allow_html=True)
 st.subheader("Register Now")
 with st.form(key='registration_form'):
-    first_name = st.text_input("First Name", max_chars=50)
-    last_name = st.text_input("Last Name", max_chars=50)
-    username = st.text_input("Username", max_chars=30, help="3-30 characters, letters, numbers, and underscores only")
-    email = st.text_input("Email", max_chars=100)
-    password = st.text_input("Password", type="password", help="At least 8 characters with uppercase, lowercase, and number")
+    first_name = st.text_input("First Name")
+    last_name = st.text_input("Last Name")
+    username = st.text_input("Username")
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
     confirm_password = st.text_input("Confirm Password", type="password")
     submit_button = st.form_submit_button("Register")
 
@@ -138,29 +110,19 @@ with st.form(key='registration_form'):
         elif password != confirm_password:
             st.error("Passwords do not match.")
         else:
-            # Validate username format
-            is_username_valid, username_error = is_valid_username(username)
-            if not is_username_valid:
-                st.error(username_error)
-            else:
-                # Validate password strength
-                is_password_valid, password_error = is_valid_password(password)
-                if not is_password_valid:
-                    st.error(password_error)
-                else:
-                    conn = sqlite3.connect('users.db')
-                    c = conn.cursor()
-                    try:
-                        c.execute(
-                            "INSERT INTO users (username, email, password, first_name, last_name, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-                            (username, email, hash_password(password), first_name, last_name, datetime.now())
-                        )
-                        conn.commit()
-                        st.success("Registration successful! Welcome aboard!")
-                    except sqlite3.IntegrityError:
-                        st.error("Username or email already exists.")
-                    finally:
-                        conn.close()
+            conn = sqlite3.connect('users.db')
+            c = conn.cursor()
+            try:
+                c.execute(
+                    "INSERT INTO users (username, email, password, first_name, last_name, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                    (username, email, hash_password(password), first_name, last_name, datetime.now())
+                )
+                conn.commit()
+                st.success("Registration successful! Welcome aboard!")
+            except sqlite3.IntegrityError:
+                st.error("Username or email already exists.")
+            finally:
+                conn.close()
 
 st.markdown('</div>', unsafe_allow_html=True)
 
