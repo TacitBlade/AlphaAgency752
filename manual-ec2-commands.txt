@@ -1,0 +1,34 @@
+# Manual Commands to Add SSH Key to AWS EC2 Instance
+
+## Step 1: Connect to your EC2 instance using your old key
+ssh -i AlphaAgency752_old.pem.backup ec2-user@YOUR_EC2_IP
+
+## Step 2: Once connected, run these commands on the EC2 instance:
+
+# Create .ssh directory (if it doesn't exist)
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+# Add your new Ed25519 public key
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOtKZ56kUGeExyFqeKVeom9qQm1rebJEKuKh4VjddXtE AlphaAgency752-2025-07-29" >> ~/.ssh/authorized_keys
+
+# Set correct permissions
+chmod 600 ~/.ssh/authorized_keys
+
+# Verify the key was added
+tail -1 ~/.ssh/authorized_keys
+
+# Exit the instance
+exit
+
+## Step 3: Test the new key from your local machine
+ssh -i AlphaAgency752_ed25519 ec2-user@YOUR_EC2_IP
+
+## Replace YOUR_EC2_IP with your actual EC2 instance IP address or DNS name
+## Replace ec2-user with the appropriate username for your AMI:
+## - Amazon Linux 2: ec2-user
+## - Ubuntu: ubuntu  
+## - CentOS: centos
+## - RHEL: ec2-user
+## - SUSE: ec2-user
+## - Debian: admin
